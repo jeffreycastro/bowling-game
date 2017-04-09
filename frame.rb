@@ -38,17 +38,43 @@ class Frame
 
   private
   def invalid_frame?
-    empty                                 = throws.empty?
-    too_many_throws                       = throws.size > MAX_THROWS
-    frame_score_exceed                    = frame_score > MAX_FRAME_SCORE && !last_frame?
-    pin_invalid_value_range               = throws.count { |pin| pin < MIN_FRAME_SCORE || pin > MAX_FRAME_SCORE } > 0
-    non_strike_few_throws                 = throws.size < MIN_THROWS_NONSTRIKE && !strike?
-    non_strike_too_many_throws            = throws.size > MIN_THROWS_NONSTRIKE && !last_frame?
-    strike_too_many_throws                = throws.size != MIN_THROWS_STRIKE && strike? && !last_frame?
-    last_frame_non_strike_too_many_throws = throws.size > MIN_THROWS_NONSTRIKE && last_frame? && !strike?
-    last_frame_strike_few_throws          = throws.size < MAX_THROWS && last_frame? && strike?
+    empty? || too_many_throws? || frame_score_exceed? || pin_invalid_value_range? || non_strike_few_throws? || non_strike_too_many_throws? || strike_too_many_throws? || last_frame_non_strike_too_many_throws? || last_frame_strike_few_throws?
+  end
 
-    empty || too_many_throws || frame_score_exceed || pin_invalid_value_range || non_strike_few_throws || non_strike_too_many_throws || strike_too_many_throws || last_frame_non_strike_too_many_throws || last_frame_strike_few_throws
+  def empty?
+    throws.empty?
+  end
+
+  def too_many_throws?
+    throws.size > MAX_THROWS
+  end
+
+  def frame_score_exceed?
+    frame_score > MAX_FRAME_SCORE && !last_frame?
+  end
+
+  def pin_invalid_value_range?
+    throws.count { |pin| pin < MIN_FRAME_SCORE || pin > MAX_FRAME_SCORE } > 0
+  end
+
+  def non_strike_few_throws?
+    throws.size < MIN_THROWS_NONSTRIKE && !strike?
+  end
+
+  def non_strike_too_many_throws?
+    throws.size > MIN_THROWS_NONSTRIKE && !last_frame?
+  end
+
+  def strike_too_many_throws?
+    throws.size != MIN_THROWS_STRIKE && strike? && !last_frame?
+  end
+
+  def last_frame_non_strike_too_many_throws?
+    throws.size > MIN_THROWS_NONSTRIKE && last_frame? && !strike?
+  end
+
+  def last_frame_strike_few_throws?
+    throws.size < MAX_THROWS && last_frame? && strike?
   end
 
   def last_frame?
