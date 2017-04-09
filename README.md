@@ -29,7 +29,7 @@ sample output:
    	```
     ruby run_game.rb [[],[],[],[],[],[],[],[],[],[]]
     ```
-   2. It has invalid number of inputs for **Strike** frames  
+   2. It has invalid number of inputs for **Strike/Non-Strike** frames  
     ```
     ruby run_game.rb [[6],[9,1],[1,8],[10],[4,1],[5,2],[0,3],[10],[7,0],[10,7,2]]  
     ruby run_game.rb [[10,7,2],[9,1],[1,8],[10],[4,1],[5,2],[0,3],[10],[7,0],[10,7,2]]
