@@ -21,7 +21,7 @@ sample output:
 ---
 
 
-### Rules/Assumptions/Errors handled:
+### Rules/Assumptions:
  
  * Game can only have 10 frames
  * A frame is invalid if (you can try the commands included):
@@ -44,7 +44,11 @@ sample output:
     ```
     ruby run_game.rb [[1,1,1,1],[2,2,2,2],[3,3,3],[4,4,4],[4,1],[5,2],[0,3],[10],[7,0],[10,10,10,10]]
     ```  
-   5. It has values inside that are either negative, or > 10  
+   5. It has values inside that are either negative, or more than 10  
     ```
     ruby run_game.rb [[-6,2],[9,11],[11,8],[10],[4,1],[5,2],[0,3],[10],[7,0],[10,7,2]]
+    ``` 
+   6. It has values inside that total to more than 10 for frames 1-9  
+    ```
+    ruby run_game.rb [[6,5],[9,1],[1,8],[10],[4,1],[5,2],[0,3],[10],[7,0],[10,10,10]]
     ``` 
