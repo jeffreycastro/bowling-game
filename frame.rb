@@ -1,14 +1,20 @@
 class Frame
-  attr_accessor :pins, :frame_number
+  MIN_THROWS_STRIKE = 1
+  MIN_THROWS_NONSTRIKE = 2
+  MAX_THROWS = 3
+  MIN_FRAME_SCORE = 0
+  MAX_FRAME_SCORE = 10
 
-  def initialize(pins, frame_number)
-    @pins = pins
+  attr_accessor :throws, :frame_number
+
+  def initialize(throws, frame_number)
+    @throws = throws
     @frame_number = frame_number
   end
 
   def validate_frame
     has_error = false
-    if invalid_frame
+    if invalid_frame?
       puts "Invalid input: Frame ##{frame_number + 1} is invalid."
       has_error = true
     end
@@ -16,34 +22,36 @@ class Frame
     has_error
   end
 
-  def invalid_frame
-    cond1 = pins.empty?
-    cond2 = pins.size == 1 && !strike?
-    cond3 = pins.size >=2 && strike? && !last_frame?
-    cond4 = pins.size > 2 && !last_frame?
-    cond5 = pins.size > 2 && last_frame? && !strike?
-    cond6 = pins.size < 3 && last_frame? && strike?
-    cond7 = pins.size > 3
-    cond8 = frame_score > 10 && !last_frame?
-    cond9 = pins.count { |pin| pin < 0 || pin > 10 } > 0
-    cond1 || cond2 || cond3 || cond4 || cond5 || cond6 || cond7 || cond8 || cond9
-  end
-
-  def strike?
-    pins.first == BowlingGame::STRIKE_SCORE
-  end
-
-  def last_frame?
-    frame_number == BowlingGame::LAST_FRAME
-  end
-
   def frame_score
-    pins.inject(0, :+)
+    throws.inject(0, :+)
   end
 
   def total_frame_score(next_frames)
     return frame_score if !strike? || last_frame?
-    return frame_score + next_frames.map(&:pins).flatten.first(2).inject(0, :+) if next_frames && next_frames.first.strike?
+    return frame_score + next_frames.map(&:throws).flatten.first(2).inject(0, :+) if next_frames && next_frames.first.strike?
     return frame_score + next_frames.first.frame_score
+  end
+
+  def strike?
+    throws.first == BowlingGame::STRIKE_SCORE
+  end
+
+  private
+  def invalid_frame?
+    empty                                 = throws.empty?
+    too_many_throws                       = throws.size > MAX_THROWS
+    frame_score_exceed                    = frame_score > MAX_FRAME_SCORE && !last_frame?
+    pin_invalid_value_range               = throws.count { |pin| pin < MIN_FRAME_SCORE || pin > MAX_FRAME_SCORE } > 0
+    non_strike_few_throws                 = throws.size < MIN_THROWS_NONSTRIKE && !strike?
+    non_strike_too_many_throws            = throws.size > MIN_THROWS_NONSTRIKE && !last_frame?
+    strike_too_many_throws                = throws.size != MIN_THROWS_STRIKE && strike? && !last_frame?
+    last_frame_non_strike_too_many_throws = throws.size > MIN_THROWS_NONSTRIKE && last_frame? && !strike?
+    last_frame_strike_few_throws          = throws.size < MAX_THROWS && last_frame? && strike?
+
+    empty || too_many_throws || frame_score_exceed || pin_invalid_value_range || non_strike_few_throws || non_strike_too_many_throws || strike_too_many_throws || last_frame_non_strike_too_many_throws || last_frame_strike_few_throws
+  end
+
+  def last_frame?
+    frame_number == (BowlingGame::TOTAL_FRAMES - 1)
   end
 end
