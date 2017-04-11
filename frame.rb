@@ -38,10 +38,10 @@ class Frame
 
   private
   def invalid_frame?
-    empty? || too_many_throws? || frame_score_exceed? || pin_invalid_value_range? || non_strike_few_throws? || non_strike_too_many_throws? || strike_too_many_throws? || last_frame_non_strike_too_many_throws? || last_frame_strike_few_throws?
+    empty_throws? || too_many_throws? || frame_score_exceed? || pin_invalid_value_range? || non_strike_few_throws? || non_strike_too_many_throws? || non_strike_last_frame_frame_score_exceed? || strike_too_many_throws? || last_frame_non_strike_too_many_throws? || last_frame_strike_few_throws? || last_frame_strike_bonus_exceed?
   end
 
-  def empty?
+  def empty_throws?
     throws.empty?
   end
 
@@ -65,8 +65,12 @@ class Frame
     throws.size > MIN_THROWS_NONSTRIKE && !last_frame?
   end
 
+  def non_strike_last_frame_frame_score_exceed?
+    frame_score > MAX_FRAME_SCORE && last_frame? && !strike?
+  end
+
   def strike_too_many_throws?
-    throws.size != MIN_THROWS_STRIKE && strike? && !last_frame?
+    throws.size != MIN_THROWS_STRIKE && !last_frame? && strike?
   end
 
   def last_frame_non_strike_too_many_throws?
@@ -77,7 +81,16 @@ class Frame
     throws.size < MAX_THROWS && last_frame? && strike?
   end
 
+  def last_frame_strike_bonus_exceed?
+    last_frame? && strike? && (throws[1] != BowlingGame::STRIKE_SCORE) && (last_frame_strike_bonus_throws_score > MAX_FRAME_SCORE)
+  end
+
   def last_frame?
     frame_number == (BowlingGame::TOTAL_FRAMES - 1)
+  end
+
+  def last_frame_strike_bonus_throws_score
+    return 0 if !last_frame? && !strike?
+    throws.last(2).inject(0, :+)
   end
 end
